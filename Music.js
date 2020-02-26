@@ -12,19 +12,28 @@ async function getsearchKeyWord(){
   var getIdofAcitveClass = $(".topnav a.active").attr('id');
   console.log(getIdofAcitveClass);
   var getjsondata;
+  var list = [];
+  document.getElementById("list").innerHTML = "";
   if(searchKeyWord=="" && getIdofAcitveClass==="home"){
         getjsondata =  await gettoptracks("");
+        getjsondata = getjsondata.toptracks.track;
   }else if(searchKeyWord!="" && getIdofAcitveClass==="home"){
         getjsondata =  await gettoptracks(searchKeyWord);
+        getjsondata = getjsondata.toptracks.track;
   }else if(searchKeyWord=="" && getIdofAcitveClass==="gettopalbums") {
         getjsondata =  await gettopalbums("");
+        getjsondata = getjsondata.topalbums.album;
   }else if(searchKeyWord!="" && getIdofAcitveClass==="gettopalbums"){
         getjsondata =  await gettopalbums(searchKeyWord);
+        getjsondata = getjsondata.topalbums.album;
+  }else if(searchKeyWord=="" && getIdofAcitveClass==="gettoptracksByLocation") {
+        getjsondata =  await gettoptracksByLocation("");
+        getjsondata = getjsondata.tracks.track;
+  }else if(searchKeyWord!="" && getIdofAcitveClass==="gettoptracksByLocation"){
+        getjsondata =  await gettoptracksByLocation(searchKeyWord);
+        getjsondata = getjsondata.tracks.track;
   }
-  //console.log(getjsondata.toptracks.track[1].image[1]['#text']);
-   var list = [];
-  document.getElementById("list").innerHTML = "";
-  for (user of getjsondata.toptracks.track){
+  for (user of getjsondata){
       list.push(`<ul class="cards">
       <li class="cards__item">
       <div class="card">
@@ -63,6 +72,20 @@ async function gettoptracks(searchKeyWord){
        url = "http://ws.audioscrobbler.com/2.0/?method=artist.gettoptracks&artist=cher&api_key=2f88bfdd53048e6731918bd0a1480023&format=json";
     }else{
        url = "http://ws.audioscrobbler.com/2.0/?method=artist.gettoptracks&artist="+searchKeyWord+"&api_key=2f88bfdd53048e6731918bd0a1480023&format=json";
+    }
+    const response= await fetch(proxyurl + url)
+    const data = await response.json()
+    console.log(data);
+    return data;
+}
+
+async function gettoptracksByLocation(searchKeyWord){
+    const proxyurl = "https://cors-anywhere.herokuapp.com/";
+    var url;
+    if(searchKeyWord==""){
+       url = "http://ws.audioscrobbler.com/2.0/?method=geo.gettoptracks&country=india&api_key=2f88bfdd53048e6731918bd0a1480023&format=json";
+    }else{
+       url = "http://ws.audioscrobbler.com/2.0/?method=geo.gettoptracks&country="+searchKeyWord+"&api_key=2f88bfdd53048e6731918bd0a1480023&format=json";
     }
     const response= await fetch(proxyurl + url)
     const data = await response.json()
